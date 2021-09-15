@@ -1,0 +1,110 @@
+---
+title: "ADA Homework 2"
+author: "Tori"
+date: "9/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Load in packages
+```{r}
+library(tidyverse)
+```
+
+1. Import class one survey data from our Github site (https://github.com/kijohnson/ADA-Fall-2021) (The dataset called ‘Class 1 Survey Fall 2021.csv’ is located in the class one folder), calling the R dataframe that you create C1survey.
+
+## Downloading the CSV file
+```{r}
+library(readr)
+
+urlfile = "https://raw.githubusercontent.com/kijohnson/ADA-Fall-2021/master/Class%201%20Survey%20Fall%202021.csv"
+
+C1survey<-read_csv(url(urlfile))
+C1survey
+```
+
+2. Determine: a. the number of observations (i.e. the number of people who filled out the survey) and b. the number of variables in the dataframe.
+
+#### Number of observations in the dataframe = 28
+#### Number of variables in the dataframe = 27
+```{r}
+dim(C1survey) 
+```
+###### Also used is str().
+
+3. a. Rename the column variables to something shorter and that is descriptive of what the variable is about (for example like_dogs for the ‘Do you like dogs?’ question variable) and b. Display that they are renamed.
+
+## Renaming column variables
+```{r}
+  C1survey_renamed<-rename(C1survey, 
+                           like_cats = 'Do you like cats?',
+                           like_dogs = 'Do you like dogs?',
+                           desert_island_item = 'If you were stranded on a desert island, what is the one item you want to have with you?',
+                           favorite_day = 'What is your favorite day of the week?',
+                           lar_owl_hummingbird = 'Are you a lark, an owl, or a hummingbird?',
+                           fav_food = 'What is your favorite food?',
+                           fav_drink = 'What is your favorite drink?',
+                           fav_season = 'What is your favorite season?',
+                           fav_month = 'What is your favorite Month?',
+                           hobby = 'What is one hobby that you enjoy?',
+                           degree_program = 'What is your degree program?',
+                           specialization = 'What is your primary specialization?',
+                           stat_software = 'What is your primary statistical software?',
+                           R_exp = 'What is your level of R experience (1=None, 5=Advanced)?',
+                           comfort_coding = 'How comfortable are you with coding?',
+                           time_coding = 'How long have you been coding (in years or months)?',
+                           hope_to_learn = 'What are three things you hope to learn in this course?',
+                           PH_interest_area = 'What is your major public health area of interest (e.g. cancer, heart disease, maternal child health, disparities, etc.)?',
+                           fav_number = 'What is your favorite number?',
+                           birth_day = 'What is your birth day (e.g. October 28-report 28)?',
+                           birth_month = 'What is your birth month (e.g. October 28-report 10)?',
+                           home_country = 'What is your home country?',
+                           home_state = 'What is your home state?',
+                           home_city = 'What is your home city?',
+                           edu_level = 'What is your highest education level?',
+                           life_slogan = 'If you were to create a slogan for your life, what would the slogan be? (Examples: "Eat, drink, and be merry, for tomorrow, we all die." "Bite off more than you can chew." "There are far better things ahead than any we leave behind.")' 
+                            )
+  C1survey_renamed
+```
+
+4. Write code to determine and display the number of factor, integer, numerical, and character variables there are in the C1survey dataset.
+
+```{r}
+sapply(C1survey_renamed, class)
+```
+#### Look up difference between lapply() and sapply()
+
+5. a. Using code, check the bday and bmonth variables for any unusual or missing values. If you find any, b. describe what you will do with the unusual values in a comment before or immediately following the code that does it, and c. after you have cleaned up any unusual values, find the median bday and month. *Note: please make sure that your bday and month variables are numeric before doing statistics
+
+### Convert variables from character to numeric and find missing or odd variables
+```{r}
+#conversion#
+C1survey_renamed$birth_day <- as.numeric(C1survey_renamed$birth_day)
+C1survey_renamed$birth_month <- as.numeric(C1survey_renamed$birth_month)
+
+#missing values#
+is.na(C1survey_renamed$birth_day)
+is.na(C1survey_renamed$birth_month)
+```
+#### There are some missing/odd values in the dataframe that need to be recoded to using the correct question format (numeric).
+```{r}
+C1survey_renamed$birth_day[C1survey_renamed$birth_day==99] <- NA
+C1survey_renamed$birth_month[C1survey_renamed$birth_month==99] <- NA
+```
+
+## Finding the median birth day and birth month.
+```{r}
+median(C1survey_renamed$birth_day, na.rm = TRUE)
+median(C1survey_renamed$birth_month, na.rm = TRUE)
+```
+
+6. a. Create a new variable called bseason that gives the season according to Northern Meteorological season in which respondents were born (winter=12/1 to 2/29, spring=3/1 to 5/31, summer=6/1 to 8/31, fall=9/1 to 11/30). b. Using the table function, print a table of Seasons in the columns and bmonths in the rows that allows you to check that the coding is correct c. Sum the columns using the addmargins function to answer the question of how many classmates were born in each season? Include your answer in the code you turn in.
+
+## Adding a new variable - bseason. I first created a separate data.frame.
+```{r}
+Birth_seasons <- data.frame(bseason = c( 'Spring' = C1survey_renamed$birth_month[c(11,13,15,21,24)], 'Summer' = C1survey_renamed$birth_month[c(5,7,17,18,24)]))
+```
+
